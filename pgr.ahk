@@ -77,10 +77,9 @@ AutoLogin(){
     
     ; 30 clicks for login and banners skip
     Loop 30 {
+        WinActivate("PGR")
         UserMouseClick(5, 10, 0, 10)
     }
-    
-    WinActivate("PGR")
     Sleep(sleepy_time)
 }
 
@@ -88,10 +87,11 @@ AutoLogin(){
 ; Dorm
 ; ==================================================
 AutoDorm() {
-
     UserMouseClick(1243, 532, 1243, 532) ; Open Dorm/Guild panel
 
     UserMouseClick(864, 384, 977, 431)   ; Enter Dorm
+    Sleep(10000) ; Wait loading
+
     UserMouseClick(887, 628, 959, 700)   ; Pat all
     UserMouseClick(887, 628, 959, 700)   ; Confirm
     Sleep(3000)
@@ -133,6 +133,7 @@ AutoDorm() {
         UserMouseClick(558, 648, 642, 681)
         UserMouseClick(727, 650, 937, 682)
     }
+    Sleep(3000)
     Send('{Esc}')
     Sleep(1000)
 
@@ -222,16 +223,16 @@ AutoCharShards(){
     Sleep(1000)
     Send('{Esc}')
     Sleep(1000)
-    ; ; Hanung
-    ; UserMouseClick(492, 186, 642, 581)
-    ; UserMouseClick(954, 638, 1045, 676)
-    ; UserMouseClick(296, 509, 356, 535)
-    ; UserMouseClick(1032, 503, 1239, 538)
-    ; UserMouseClick(1101, 652, 1224, 675)
-    ; Send('{Esc}')
-    ; Sleep(1000)
-    ; Send('{Esc}')
-    ; Sleep(1000)
+    ; Hanung
+    UserMouseClick(492, 186, 642, 581)
+    UserMouseClick(954, 638, 1045, 676)
+    UserMouseClick(296, 509, 356, 535)
+    UserMouseClick(1032, 503, 1239, 538)
+    UserMouseClick(1101, 652, 1224, 675)
+    Send('{Esc}')
+    Sleep(1000)
+    Send('{Esc}')
+    Sleep(1000)
 
     Send('{Esc}')
     Sleep(1000)
@@ -263,12 +264,12 @@ AutoTopUp(){
 ; ==================================================
 AutoMission(){
     ; if cloer
-    ; UserMouseClick(895, 251, 1038, 282)  ; Enter missions
-    ; UserMouseClick(36, 298, 198, 314)    ; Daily Missions
-    ; UserMouseClick(1076, 125, 1227, 174) ; Claim All
-    ; UserMouseClick(1076, 125, 1227, 174) ; Confirm
-    ; Send('{Esc}')
-    ; Sleep(1000)
+    UserMouseClick(895, 251, 1038, 282)  ; Enter missions
+    UserMouseClick(36, 298, 198, 314)    ; Daily Missions
+    UserMouseClick(1076, 125, 1227, 174) ; Claim All
+    UserMouseClick(1076, 125, 1227, 174) ; Confirm
+    Send('{Esc}')
+    Sleep(1000)
     
     UserMouseClick(1073, 179, 1234, 238) ; Events page  
     UserMouseClick(291, 94, 407, 136)    ; Farm Event
@@ -290,16 +291,16 @@ AutoMission(){
     UserMouseClick(1076, 125, 1227, 174) ; Claim All
     UserMouseClick(1076, 125, 1227, 174) ; Confirm
     UserMouseClick(1178, 623, 1214, 651)
-    ; BP
-    UserMouseClick(319, 86, 357, 106)
-    UserMouseClick(45, 434, 215, 461)
-    UserMouseClick(996, 646, 1210, 679)
+    ; ; BP
+    ; UserMouseClick(319, 86, 357, 106)
+    ; UserMouseClick(45, 434, 215, 461)
+    ; UserMouseClick(996, 646, 1210, 679)
 }
 
 
-AutoLogin()
+; AutoLogin()
 WinActivate("PGR")
-AutoDorm()
+; AutoDorm()
 AutoFreeSerum()
 AutoGuild()
 AutoTopUp()
