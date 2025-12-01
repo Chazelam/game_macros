@@ -26,6 +26,7 @@ def randomized_delay(delay:float,
                       bar_format='{l_bar}{bar}', 
                       ncols=50):
             time.sleep(1)
+        time.sleep(t - int(t))  # добить остаток
     else:
         time.sleep(t)
 
@@ -46,7 +47,7 @@ def gamepad_button_press(button: str,
 
         press_duration (float): длительность нажатия в секундах.
 
-        rng_time (bool): использовать ли случайную погрешность при ожидании.
+        rng_time_variation (float): максимальная погрешность времени нажатия в секундах.
     """
     match button.upper():
         # Основные кнопки
@@ -110,7 +111,6 @@ def gamepad_button_press(button: str,
 
 
 def gamepad_dna_action(action:str):
-        # нажимаем кнопку
     match action.lower():
         case 'ultimate' | 'ult':
             # Зажатие LB
@@ -186,7 +186,7 @@ def expulsion_run(iteration: int = 0,
         gamepad_dna_action('ult')
 
     print("Ожидание прохождения...")
-    randomized_delay(clear_delay, unit='s') 
+    randomized_delay(clear_delay, p_bar=True, desc="Прохождение") 
 
     if iteration:
         print(f"  Итерация {iteration} завершена.")
