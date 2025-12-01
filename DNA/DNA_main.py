@@ -30,7 +30,6 @@ def randomized_delay(delay:float,
         time.sleep(t)
 
 
-
 def gamepad_button_press(button: str, 
                          press_duration:float = 0.1, 
                          rng_time_variation: float = 0.1):
