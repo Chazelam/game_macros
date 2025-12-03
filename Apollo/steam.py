@@ -4,6 +4,7 @@ import sys
 import time
 import pyautogui
 from pyautogui import ImageNotFoundException
+from config import steam_path, steam_accaunts, steam_games, non_steam_games
 
 
 class Steam():
@@ -157,9 +158,9 @@ class Steam():
         else:
             raise ValueError(f"Game '{game_name}' not found in game lists")
 
-        current_acc = self.get_current_steam_account()
-
-        if current_acc != game["account_id"]:
+        current_acc_id = self.get_current_steam_account()
+        needed_acc_id = self.steam_accaunts[game["account"]]["id"]
+        if current_acc_id != needed_acc_id:
             print(f"Need account {game['account']}, switching...")
             success = self.steam_login(game["account"])
             if not success:
@@ -180,29 +181,6 @@ if __name__ == "__main__":
     if len(sys.argv) < 2:
         print("Usage: python steam.py <GameName>")
         sys.exit(1)
-
-    steam_path      = r"C:\Program Files (x86)\Steam"
-    steam_accaunts  = {
-        'kz': {'id': '76561199728650271',
-               'name': '',
-               'pfp': r'C:\Users\Chazelam\Documents\AutoHotkey\steam_pfp\kz.png'},
-        'ru': {'id': '76561199117729436',
-               'name': '',
-               'pfp': r'C:\Users\Chazelam\Documents\AutoHotkey\steam_pfp\ru.png'}}
-    
-    steam_games     = {
-        "Nier_Automata": {"game_id": "524220",  "account": "kz", "account_id": "76561199728650271"},
-        "Stellar_Blade": {"game_id": "3489700", "account": "kz", "account_id": "76561199728650271"},
-
-        "Hollow_Knight": {"game_id": "367520",  "account": "ru", "account_id": "76561199117729436"},
-        "SilkSong":      {"game_id": "1030300", "account": "ru", "account_id": "76561199117729436"},
-        "PalWorld":      {"game_id": "1623730", "account": "ru", "account_id": "76561199117729436"},
-        "NoExistence":   {"game_id": "287380",  "account": "ru", "account_id": "76561199117729436"}}
-    
-    non_steam_games = {
-        "Elden_Ring":    {"command": "modengine2_launcher.exe -t er -c config_eldenring.toml",
-                          "dir":     r"C:\Program Files (x86)\Steam\steamapps\common\ELDEN RING\ModEngine-2.1.0.0-win64",
-                          "account": "kz", "account_id": "76561199728650271"}}
 
     game_name = sys.argv[1]
     steam = Steam(steam_path=steam_path,
