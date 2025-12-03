@@ -2,31 +2,39 @@ import time
 import random
 import vgamepad as vg
 from tqdm import tqdm
+import pyautogui
+from pyautogui import ImageNotFoundException
 
 
-# создаём виртуальный геймпад Xbox 360
+# create a virtual Xbox 360 gamepad
 gamepad = vg.VX360Gamepad()
 
 
 def randomized_delay(delay:float, 
                      rng_time_variation: float = 0.1, 
                      p_bar: bool = False, 
-                     desc: str = "Ожидание"):
-    """
-    Задержка в секундах с добавлением случайного разброса.
-    base_delay - в секундах
-    rng_time_variation - максимальная погрешность в секундах
-    p_bar - отображать прогресс-бар или нет
-    """
+                     desc: str = "Waiting"):
+    '''
+    Delay in seconds with added random jitter.
+
+    :param delay: Base delay in seconds.
+    :type delay: float
+    :param rng_time_variation: Maximum time variation in seconds.
+    :type rng_time_variation: float
+    :param p_bar: Whether to display a progress bar.
+    :type p_bar: bool
+    :param desc: Description used for the progress bar.
+    :type desc: str
+    '''
     t = delay + random.uniform(0, rng_time_variation)
 
     if p_bar:
         for _ in tqdm(range(int(t)), 
-                      desc=f"  {desc} {t:.1f}s", 
+                      desc=f"{desc} {t:.1f}s", 
                       bar_format='{l_bar}{bar}', 
-                      ncols=50):
+                      ncols=48):
             time.sleep(1)
-        time.sleep(t - int(t))  # добить остаток
+        time.sleep(t - int(t))  # sleep the remaining fractional part
     else:
         time.sleep(t)
 
@@ -34,23 +42,18 @@ def randomized_delay(delay:float,
 def gamepad_button_press(button: str, 
                          press_duration:float = 0.1, 
                          rng_time_variation: float = 0.1):
-    """
-    Нажимает указанную кнопку геймпада на заданное время.
+    '''
+    Presses the specified gamepad button for a given duration.
 
-    Параметры:
-        button (str): строковое обозначение кнопки:
-            - 'A', 'B', 'X', 'Y' — основные кнопки
-            - 'UP', 'DOWN', 'LEFT', 'RIGHT' — крестовина (D-Pad)
-            - 'LB', 'RB' — плечевые кнопки
-            - 'L3', 'R3' — кнопки стиков
-            - 'START', 'BACK', 'GUIDE' — системные кнопки
-
-        press_duration (float): длительность нажатия в секундах.
-
-        rng_time_variation (float): максимальная погрешность времени нажатия в секундах.
-    """
+    :param button: String identifier of the button (e.g. 'A', 'B', 'X', 'Y', 'UP', 'DOWN', 'LEFT', 'RIGHT', 'LB', 'RB', 'L3', 'R3', 'START', 'BACK', 'GUIDE').
+    :type button: str
+    :param press_duration: Duration of the press in seconds.
+    :type press_duration: float
+    :param rng_time_variation: Maximum random variation for the press duration in seconds.
+    :type rng_time_variation: float
+    '''
     match button.upper():
-        # Основные кнопки
+    # Main buttons
         case 'Y':
             btn = vg.XUSB_BUTTON.XUSB_GAMEPAD_Y
         case 'A':
@@ -60,7 +63,7 @@ def gamepad_button_press(button: str,
         case 'X':
             btn = vg.XUSB_BUTTON.XUSB_GAMEPAD_X
 
-        # Крестовина (D-Pad)
+    # D-Pad
         case 'DPAD_UP' | 'UP':
             btn = vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_UP
         case 'DPAD_DOWN' | 'DOWN':
@@ -70,19 +73,19 @@ def gamepad_button_press(button: str,
         case 'DPAD_RIGHT' | 'RIGHT':
             btn = vg.XUSB_BUTTON.XUSB_GAMEPAD_DPAD_RIGHT
 
-        # Плечевые кнопки
+    # Shoulder buttons
         case 'LB' | 'L1' | 'LEFT_SHOULDER':
             btn = vg.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_SHOULDER
         case 'RB' | 'R1' | 'RIGHT_SHOULDER':
             btn = vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_SHOULDER
 
-        # Стики (кнопки нажатия)
+    # Thumbstick buttons (presses)
         case 'L3' | 'LEFT_THUMB':
             btn = vg.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_THUMB
         case 'R3' | 'RIGHT_THUMB':
             btn = vg.XUSB_BUTTON.XUSB_GAMEPAD_RIGHT_THUMB
 
-        # Системные кнопки
+    # System buttons
         case 'START':
             btn = vg.XUSB_BUTTON.XUSB_GAMEPAD_START
         case 'BACK':
@@ -90,7 +93,7 @@ def gamepad_button_press(button: str,
         case 'GUIDE' | 'HOME':
             btn = vg.XUSB_BUTTON.XUSB_GAMEPAD_GUIDE
 
-        # По умолчанию - ошибка
+    # Default - error
         case _:
             raise ValueError(
                 "Unsupported button. Use one of: "
@@ -98,14 +101,13 @@ def gamepad_button_press(button: str,
                 "'LB', 'RB', 'L3', 'R3', 'START', 'BACK', 'GUIDE'."
             )
 
-    # нажимаем кнопку
+    # press the button
     gamepad.press_button(btn)
     gamepad.update()
 
-    # ждём со случайной погрешностью
     randomized_delay(delay=press_duration, rng_time_variation=rng_time_variation)
  
-    # отпускаем кнопку
+    # release the button
     gamepad.release_button(btn)
     gamepad.update()
 
@@ -113,26 +115,26 @@ def gamepad_button_press(button: str,
 def gamepad_dna_action(action:str):
     match action.lower():
         case 'ultimate' | 'ult':
-            # Зажатие LB
+            # Hold LB
             btn1 = vg.XUSB_BUTTON.XUSB_GAMEPAD_LEFT_SHOULDER
             gamepad.press_button(btn1)
             gamepad.update()
             randomized_delay(delay=0.2, rng_time_variation=0.1)
 
-            # Зажатие Y
+            # Press Y
             btn2 = vg.XUSB_BUTTON.XUSB_GAMEPAD_Y
             gamepad.press_button(btn2)
             gamepad.update()
             randomized_delay(delay=0.1, rng_time_variation=0.1)
 
-            # Отпускание кнопок
+            # Release buttons
             gamepad.release_button(btn1)
             gamepad.release_button(btn2)
             gamepad.update()
             return
 
         case 'position_reset':
-            # Переход в настройки внутри комиссии
+            # Enter settings inside the commission
             gamepad_button_press('START')
             randomized_delay(1)
             gamepad_button_press('DPAD_RIGHT', press_duration=0.1, rng_time_variation=0.1)
@@ -140,12 +142,12 @@ def gamepad_dna_action(action:str):
             gamepad_button_press('A')
             randomized_delay(1)
 
-            # Переходд в нужную вкладку
+            # Navigate to the required tab
             for _ in range(5):
                 gamepad_button_press('RB')
                 randomized_delay(delay=0.1, rng_time_variation=0.1)
            
-            # Выбор и подтверждение сброса
+            # Select and confirm the reset
             for _ in range(2):
                 gamepad_button_press('DPAD_DOWN', press_duration=0.1, rng_time_variation=0.1)
                 randomized_delay(0.2, rng_time_variation=0.1)
@@ -155,51 +157,99 @@ def gamepad_dna_action(action:str):
             gamepad_button_press('A')            
             return
 
+def locate_on_sreen(img_path: str, 
+                    attempts: int = 5,
+                    attempt_delay: float = 2, 
+                    confidence: float = 0.8,
+                    description: str = "Locating Image"):
+    '''
+    Attempts to locate an image on the screen multiple times.
+    
+    :param img_path: Path to the image file to locate.
+    :type img_path: str
+    :param attempts: Number of attempts to locate the image.
+    :type attempts: int
+    :param attempt_delay: Delay between attempts in seconds.
+    :type attempt_delay: float
+    :param confidence: Confidence level for image matching (0 to 1).
+    :type confidence: float
+    '''
+
+    for _ in tqdm(range(int(attempts)), 
+                    desc=description, 
+                    bar_format='{l_bar}{bar}', 
+                    ncols=48):
+        try:
+            img = pyautogui.locateOnScreen(img_path, confidence)
+            return img
+        except ImageNotFoundException:
+            pass
+        time.sleep(attempt_delay)
+    return False
+
 
 def expulsion_run(iteration: int = 0, 
-                  load_delay: int = 10, 
-                  clear_delay: int = 60, 
+                  load_delay: int = 10,
                   position_reset: bool = False, 
-                  ult_use: bool = False):
-    """
-    Выполняет одну итерацию нажатий кнопок геймпада с задержкой.
-    """
+                  ult_use: bool = False,
+                  use_manual: bool = False):
+    '''
+    Executes a single run of the expulsion mission in the game.
+    
+    :param iteration: Description
+    :type iteration: int
+    :param load_delay: Description
+    :type load_delay: int
+    :param clear_delay: Description
+    :type clear_delay: int
+    :param position_reset: Description
+    :type position_reset: bool
+    :param ult_use: Description
+    :type ult_use: bool
+    :param use_manual: Description
+    :type use_manual: bool
+    '''
     if iteration:
-        print(f"\n--- итерация {iteration} ---")
+        print(f"\n--- iteration {iteration} ---")
 
-    print("Начало комиссии...")
+    print("Starting commission...")
     gamepad_button_press("Y")
-    randomized_delay(2)
+    randomized_delay(1)
 
-    print("Выбор мануала...")
+    print("Selecting manual...")
+    if use_manual:
+        gamepad_button_press('DPAD_RIGHT', press_duration=0.05, rng_time_variation=0.1)
+    randomized_delay(1)
     gamepad_button_press("A")
 
-    print("Ожидание загрузки...")
-    randomized_delay(load_delay, p_bar=True, desc="Загрузка") 
-
+    print("Waiting for loading...")
+    randomized_delay(load_delay, p_bar=True, desc="Loading") 
     if position_reset:
-        print("Сброс позиции...")
+        print("Resetting position...")
         gamepad_dna_action('position_reset')
-        randomized_delay(2, p_bar=False)  
+        randomized_delay(2)  
     if ult_use:
-        print("Использование ультимейта...")
+        print("Using ultimate...")
         gamepad_dna_action('ult')
 
-    print("Ожидание прохождения...")
-    randomized_delay(clear_delay, p_bar=True, desc="Прохождение") 
+    print("Waiting for run to complete...")
+    randomized_delay(20, p_bar=True, desc="Run") 
+
+    again = r'C:\Users\Chazelam\Documents\AutoHotkey\DNA\Rhythm.png'
+    locate_on_sreen(again, attempts=30, confidence=0.8)
 
     if iteration:
-        print(f"  Итерация {iteration} завершена.")
+        print(f"  Iteration {iteration} completed.")
 
 
 if __name__ == "__main__":
-    print("Ожидание перед стартом (5 секунд)...")
+    print("Waiting before start (5 seconds)...")
     randomized_delay(5, p_bar=True, rng_time_variation=0)
     i = 1
     while True:
         expulsion_run(i, 
-                      load_delay=10, 
-                      clear_delay=50,
+                      load_delay=8, 
                       position_reset=True,
-                      ult_use=True)
+                      ult_use=True,
+                      use_manual=False)
         i += 1
