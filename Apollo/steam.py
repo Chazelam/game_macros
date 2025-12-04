@@ -164,8 +164,7 @@ class Steam():
             print(f"Need account {game['account']}, switching...")
             success = self.steam_login(game["account"])
             if not success:
-                print("Failed to switch account, exiting.")
-                return
+                raise RuntimeError("Failed to switch Steam account, cannot continue.")
         else:
             print(f"Current account is correct: {game['account']}")
 
